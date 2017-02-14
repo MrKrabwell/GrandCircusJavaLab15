@@ -2,23 +2,43 @@
  * Created by yosuk on 2/13/2017.
  */
 
-import com.sun.org.apache.xpath.internal.SourceTree;
-import jdk.internal.util.xml.impl.Input;
-
 import java.io.*;
-import java.lang.reflect.Array;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CountriesTextFile {
 
     public CountriesTextFile() {
-        // TODO: Make an actual constructor
-        // Make constructor create the file if it doesn't exist, overload?
+        // Do nothing
+    }
+
+    /**
+     * This method creates a new country text file
+     * @param fileName Name of file
+     * @return True if successfully created file, false otherwise
+     */
+    public boolean createNewCountryFile(String fileName) {
+
+        // Prompt user if they want to make a new file
+        System.out.printf("\nWould you like to make a new file %s? (y/n) ", fileName);
+        if (InputValidator.askUserYesNo()) {
+            // Create new file
+            try {
+                PrintWriter filePWriter = new PrintWriter(new FileOutputStream(fileName));
+                filePWriter.close();
+            }
+            catch (FileNotFoundException e) {
+                System.out.println("Error!  File not found.\n");
+            }
+        }
+        else {
+            System.out.println("File not created!!!");
+            return false;
+        }
+
+        // Executed successfully
+        return true;
     }
 
 
@@ -53,6 +73,7 @@ public class CountriesTextFile {
         // File doesn't exist, let user know and return null
         catch (FileNotFoundException e) {
             System.out.println("File is not found!!!");
+            createNewCountryFile(fileName);
             return null;
         }
         catch (IOException e) {
@@ -68,7 +89,15 @@ public class CountriesTextFile {
      * @param country Name of the country to be added
      * @return True if country was successfully added
      */
-    public boolean addCountriesToFile(String fileName, String country) {
+    public boolean addCountriesToFile(String fileName, String country) throws Exception {
+
+        // Check to see if country already exists
+        String countryStr = readCountriesFromFile(fileName);
+        if (countryStr.toLowerCase().contains(country.toLowerCase())) {
+            throw new Exception("Country already exists in file!!");
+        }
+
+
         try {
             // Create the Output Stream Object to write to file, be able to append
             FileOutputStream countryFileOS = new FileOutputStream(fileName, true);
@@ -86,13 +115,14 @@ public class CountriesTextFile {
         }
         catch (FileNotFoundException e) {
             System.out.println("File not found!!!");
-            // TODO: Ask user if they want to create file
+            createNewCountryFile(fileName);
             return false;
         }
 
         // If it got to here, everything executed
         return true;
     }
+
 
     /**
      * This method will remove a country from the file
@@ -129,16 +159,20 @@ public class CountriesTextFile {
 
         // Rebuild the file
         for (String element : countryArray) {
-            addCountriesToFile(fileName,element);
+            try {
+                addCountriesToFile(fileName,element);
+            }
+            catch (Exception e) {
+                System.out.println("Error!  " + e.toString());
+            }
         }
 
         return true;
     }
 
 
-
-    public void removeCountryfromFile(String fileName, int index) {
-        // TODO: Write this code, this is an overloaded method of specifying the string
+    // TODO: Write this code, this is an overloaded method of specifying the string
+    public void removeCountryFromFile(String fileName, int index) {
         return;
     }
 

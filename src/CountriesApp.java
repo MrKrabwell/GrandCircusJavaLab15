@@ -1,8 +1,10 @@
+import java.io.FileNotFoundException;
+
 public class CountriesApp {
 
     public static void main(String[] args) {
         // Variable Declarations
-        String fileName = "src/countries_list.txt";          // File name of the country list
+        String fileName = "src/countries.txt";          // File name of the country list
         
         // Welcome message
         System.out.println("Welcome to the Countries Maintenance Application!\n");
@@ -26,11 +28,16 @@ public class CountriesApp {
                 case 1:
                     // Print the entire list in the file
                     System.out.println();
-                    if (countryListFile.readCountriesFromFile(fileName).isEmpty()) {
-                        System.out.println("File is empty!!");
+                    try {
+                        if (countryListFile.readCountriesFromFile(fileName).isEmpty()) {
+                            System.out.println("File is empty!!");
+                        }
+                        else {
+                            System.out.println(countryListFile.readCountriesFromFile(fileName));
+                        }
                     }
-                    else {
-                        System.out.println(countryListFile.readCountriesFromFile(fileName));
+                    catch (NullPointerException e) {
+                        // Do nothing
                     }
                     System.out.println();
                     break;
@@ -38,18 +45,28 @@ public class CountriesApp {
                     System.out.println();
                     // Get user input, notify user of result
                     System.out.print("Enter country: ");
-                    if (countryListFile.addCountriesToFile(fileName, InputValidator.getString())) {
-                        System.out.println("This country has been saved!");
+                    try {
+                        if (countryListFile.addCountriesToFile(fileName, InputValidator.getString())) {
+                            System.out.println("This country has been saved!");
+                        }
+                        else {
+                            System.out.println("An error occurred!  This country has not been added.");
+                        }
                     }
-                    else {
-                        System.out.println("An error occurred!  This country has not been added.");
+                    catch (NullPointerException e) {
+                        // Do nothing
                     }
+                    catch (Exception e) {
+                        System.out.println("Error!  " + e.getMessage());
+                    }
+
                     System.out.println();
                     break;
                 case 3:
+                    System.out.println();
                     System.out.print("Enter country to remove: ");
                     if (countryListFile.removeCountryFromFile(fileName, InputValidator.getString())) {
-                        System.out.println("This country has been removed");
+                        System.out.println("This country has been removed.");
                     }
                     else {
                         System.out.println("An error occurred!  This country is not removed");
@@ -58,7 +75,7 @@ public class CountriesApp {
                     break;
                 case 4:
                     if (countryListFile.clearAllEntries(fileName)) {
-                        System.out.println("All entries have been cleared successfully");
+                        System.out.println("All entries have been cleared successfully.");
                     }
                     else {
                         System.out.println("An error occurred!  File is not modified.");
